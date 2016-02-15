@@ -22,9 +22,9 @@ sizes = seq(1,191,by=10)
 reps = 1:50
 methods = c("Box", "Linear", "Ribbon", "Vertical")
 
-pdf("output.pdf", width=12, height=8)
-par(mfrow=c(3,4), mar=c(1,4,2,2))
 for (num in nums) {
+  pdf(paste0("output_", num, ".pdf"), width=12, height=8)
+  par(mfrow=c(4,3), mar=c(1,4,2,2))
   for (size in sizes) {
     for (method in methods) {
       cat("Processing location", num, ",", size, "for method", method, "\n")
@@ -67,6 +67,6 @@ for (num in nums) {
       write.csv(a, paste0(paste("out/area", num, size, method, sep="_"), ".csv"), row.names=FALSE)
     }
   }
+  dev.off()
 }
-dev.off()
 
