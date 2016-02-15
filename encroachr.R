@@ -24,8 +24,8 @@ methods = c("Box", "Linear", "Ribbon", "Vertical")
 
 pdf("output.pdf", width=12, height=8)
 par(mfrow=c(3,4), mar=c(1,4,2,2))
-for (num in nums[1:1]) {
-  for (size in sizes[1:1]) {
+for (num in nums) {
+  for (size in sizes) {
     for (method in methods) {
       cat("Processing location", num, ",", size, "for method", method, "\n")
       p = list()
