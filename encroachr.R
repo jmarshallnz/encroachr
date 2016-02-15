@@ -36,7 +36,7 @@ for (num in nums[1:1]) {
         filename = paste(num, size, method, rep, sep="_")
 
         # main data is here...
-        d2 = readMat(paste0("data/data2/", filename, ".mat"))$simulation.data
+        d2 = readMat(file.path("data", paste0(filename, ".mat")))$simulation.data
 
         p[[rep]] = unlist(lapply(d2["edge.patches",,], mean))
         s[[rep]] = unlist(lapply(d2["shape",,], mean))
