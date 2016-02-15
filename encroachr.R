@@ -22,10 +22,10 @@ sizes = seq(1,191,by=10)
 reps = 1:50
 methods = c("Box", "Linear", "Ribbon", "Vertical")
 
-pdf("output.pdf", width=8, height=12)
-par(mfrow=c(3,4))
-for (num in nums[1:2]) {
-  for (size in sizes[1:2]) {
+pdf("output.pdf", width=12, height=8)
+par(mfrow=c(3,4), mar=c(1,4,2,2))
+for (num in nums[1:1]) {
+  for (size in sizes[1:1]) {
     for (method in methods) {
       cat("Processing location", num, ",", size, "for method", method, "\n")
       p = list()
@@ -45,22 +45,22 @@ for (num in nums[1:2]) {
 
       p_max = max(unlist(lapply(p, max)))
       main = paste(method, num, size, sep="_")
-      plot(NULL, ylim=c(0,p_max), xlim = c(1,length(p[[1]])), xlab="Time", ylab="Average perimeter", main=main)
+      plot(NULL, ylim=c(0,p_max), xlim = c(1,length(p[[1]])), xlab="", xaxt="n", ylab="Average perimeter", main=main)
       lapply(p, lines)
 
       s_max = max(unlist(lapply(s, max)))
       main = paste(method, num, size, sep="_")
-      plot(NULL, ylim=c(0,s_max), xlim = c(1,length(s[[1]])), xlab="Time", ylab="Average solidity", main=main)
+      plot(NULL, ylim=c(0,s_max), xlim = c(1,length(s[[1]])), xlab="", xaxt="n", ylab="Average solidity", main=main)
       lapply(s, lines)
 
       a_max = max(unlist(lapply(a, max)))
       main = paste(method, num, size, sep="_")
-      plot(NULL, ylim=c(0,a_max), xlim = c(1,length(a[[1]])), xlab="Time", ylab="Average area", main=main)
+      plot(NULL, ylim=c(0,a_max), xlim = c(1,length(a[[1]])), xlab="", xaxt="n", ylab="Average area", main=main)
       lapply(a, lines)
 
-      p = as.data.frame(p); names(p) <- NULL
-      s = as.data.frame(s); names(s) <- NULL
-      a = as.data.frame(a); names(a) <- NULL
+      p = as.data.frame(p); names(p) <- paste0("rep",1:ncol(p)); p = cbind(time=1:nrow(p), p)
+      s = as.data.frame(s); names(s) <- paste0("rep",1:ncol(s)); s = cbind(time=1:nrow(s), s)
+      a = as.data.frame(a); names(a) <- paste0("rep",1:ncol(a)); a = cbind(time=1:nrow(a), a)
 
       write.csv(p, paste0(paste("out/perim", num, size, method, sep="_"), ".csv"), row.names=FALSE)
       write.csv(s, paste0(paste("out/shape", num, size, method, sep="_"), ".csv"), row.names=FALSE)
