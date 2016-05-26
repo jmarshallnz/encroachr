@@ -44,7 +44,33 @@ for (num in nums) {
         p[[rep]] = unlist(lapply(d2["edge.patches",,], sum))
         s[[rep]] = unlist(lapply(d2["shape",,], mean))
         a[[rep]] = unlist(lapply(d2["size.patches",,], sum))
-        b[[rep]] = unlist(d2_epi["total.biodiversity",,])
+
+        total_biodiversity <- function(area, power) {
+          # basic idea is we're dividing a total area (with total biodiversity)
+          # up into a bunch of areas. The biodiversity in each will be less than the total
+          # but greater than it would be if it was proportional to area. Thus, the proportion
+          # of biodiversity in each bit uses the power law. But there'll be overlap between
+          # areas, so it's kinda like sampling without replacement from original popn into
+          # sub popns where the probability of inclusion is the prop of biodiversity.
+          # Total biodiversity is then the union of the biodiversities across the areas,
+          # as you'll get species in common.
+          total_area = sum(area)
+          if (total_area == 0) {
+            return(0)
+          }
+          prop_area = area / total_area
+          prop_biod = prop_area^power
+          prop_outside_biod = 1 - prop_biod
+          prop_outside_all  = prod(prop_outside_biod)
+          prop_union_biod   = 1 - prop_outside_all
+          total_biod = total_area^power
+          total_union = total_biod * prop_union_biod
+          total_union
+        }
+
+        b[[rep]] = unlist(lapply(d2["size.patches",,], total_biodiversity, power=0.3))
+
+        # not sure if this is right?
         r[[rep]] = unlist(d2_epi["total.risk",,])
       }
 
