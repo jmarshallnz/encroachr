@@ -5,8 +5,8 @@ biod <- function(k, m) {
   m ^ ((k^2 - 1/2*k) / (k + 1/2)) * (1 - (1 - 1/m^k)^m)
 }
 
-risk <- function(k, m) {
-  1 / (m ^ (k - 1/2) * (1 - (1 - 1/m^k)^m)^((k+1/2)/k))
+risk <- function(z, m) {
+  1 / (m ^ (z - 1/2) * (1 - (1 - 1/m^z)^m)^((z+1/2)/z))
 }
 
 
@@ -37,20 +37,20 @@ plot(r*cos(theta), r*sin(theta), type="l")
 
 n = 10000
 theta_hat = runif(n)*2*pi
-r_hat = (R+a) * sqrt(runif(n))
+r_hat = R*(1+a) * sqrt(runif(n))
 
-sum(r_hat < R - a*sin(k*theta_hat))
+sum(r_hat < R - R*a*sin(k*theta_hat))/n
 
-area_debrolie = pi*R^2 + pi*a^2/2
-area_circle  = pi*(R+a)^2
+area_debrolie = pi*R^2*(1 + a^2/2)
+area_circle  = pi*R^2*(1+a)^2
 area_debrolie/area_circle
 
-plot(r_hat*cos(theta_hat), r_hat*sin(theta_hat), pch='.', col=ifelse(r_hat < R - a*sin(k*theta_hat), "red", "blue"))
+plot(r_hat*cos(theta_hat), r_hat*sin(theta_hat), pch='.', col=ifelse(r_hat < R* - R*a*sin(k*theta_hat), "red", "blue"))
 
 arc_len <- function(R, a, k) {
   arclen_f <- function(theta, R, a, k) {
-    r = R - a*sin(k*theta)
-    dr = -a*k*cos(k*theta)
+    r = R*(1 - a*sin(k*theta))
+    dr = -R*a*k*cos(k*theta)
     sqrt(r^2 + dr^2)
   }
   alen <- numeric(length(R))
@@ -59,9 +59,8 @@ arc_len <- function(R, a, k) {
   alen
 }
 
-biod_petal <- function(z, m) {
-  m ^ ((k^2 - 1/2*k) / (z + 1/2)) * (1 - (1 - 1/m^k)^m)
-}
+plot(function(x) { ans = numeric(length(x)); for (i in seq_along(x)) ans[i] = arc_len(1, x[i], 5); ans }, xlim=c(0,1))
+plot(function(x) { ans = numeric(length(x)); for (i in seq_along(x)) ans[i] = arc_len(1, x[i], 10); ans }, xlim=c(0,1), add=TRUE)
 
 risk_petal <- function(z, m, a, k) {
   # start by balancing the biodiversity
@@ -77,13 +76,27 @@ risk_petal <- function(z, m, a, k) {
   Rm / R1
 }
 
-
-plot(NULL, xlim=c(0,4), ylim=c(0,3), xlab="Power", ylab="Risk")
-for (i in 1:8) {
-  plot(function(x) { risk_petal(x, i, 0.2, 3)}, xlim=c(0, 4), col=i, add=TRUE, n=1000)
-}
-legend('topright', paste(1:8, "fragments"), fill=1:8)
-
 solidity <- function(a) {
   (1 + a^2/2) / (1 + a)^2
 }
+
+pdf("z.pdf", width=12, height=12)
+par(mfrow=c(3,3))
+for (num_clusters in 1:9) {
+  grid = expand.grid(amplitude=seq(0,1,by=0.01), complexity=0:10, z=NA)
+  for (i in 1:nrow(grid)) {
+    grid$z[i] = uniroot(function(x) { risk_petal(x, num_clusters, grid$amplitude[i], grid$complexity[i]) - 1 }, c(0.5, 10))$root
+    if (i %% 100 == 0)
+      cat("Up to", i, "of", nrow(grid), "\n")
+  }
+  image(seq(0,1,by=0.01), 0:10, matrix(grid$z, 101, 11), zlim=c(0.5, 10), xlab="Amplitude", ylab="Complexity (nodes)", main=paste(num_clusters, "clusters"))
+}
+dev.off()
+
+pdf("risk.pdf", width=8, height=6)
+plot(NULL, xlim=c(0,4), ylim=c(0,3), xlab="Power", ylab="Risk")
+for (i in 1:8) {
+  plot(function(x) { risk_petal(x, i, 0.8, 5)}, xlim=c(0, 4), col=i, add=TRUE, n=1000)
+}
+legend('topright', paste(1:8, "fragments"), fill=1:8)
+dev.off()
