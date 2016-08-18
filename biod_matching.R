@@ -22,7 +22,13 @@ for (i in 1:8) {
 legend('topright', paste(1:8, "fragments"), fill=1:8)
 
 #' Test out some de Broglie plots
-
+#'
+#' TODO:
+#'   1. Change amplitude for a given k and then adjust such that area is preserved.
+#'   2. Compute solidity (area to minimal circle area outside) and core (maximal circle area inside to full area?)
+#'   3. Plot for various k and amplitudes, keeping area fixed (r will change)
+#'   4. Compute perimeters for each one as well via numeric integration (already have this below!)
+#'   
 R = 1
 a = 0.2
 k = 10
