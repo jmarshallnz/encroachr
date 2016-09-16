@@ -51,8 +51,7 @@ area_debrolie = pi*R^2*(1 + a^2/2)
 area_circle  = pi*R^2*(1+a)^2
 area_debrolie/area_circle
 
-plot(r_hat*cos(theta_hat), r_hat*sin(theta_hat), pch='.', col=ifelse(r_hat < R* - R*a*sin(k*theta_hat), "red", "blue"))
-
+# compute perimeter of radius R, amplitude a, petals k
 arc_len <- function(R, a, k) {
   arclen_f <- function(theta, R, a, k) {
     r = R*(1 - a*sin(k*theta))
@@ -60,10 +59,49 @@ arc_len <- function(R, a, k) {
     sqrt(r^2 + dr^2)
   }
   alen <- numeric(length(R))
+  if (length(a) == 1 && length(R) > 1)
+    a = rep(a, length(R))
   for (i in seq_along(R))
-    alen[i] = integrate(arclen_f, 0, 2*pi, subdivisions=1000,R=R[i], a=a, k=k)$value
+    alen[i] = integrate(arclen_f, 0, 2*pi, subdivisions=1000,R=R[i], a=a[i], k=k)$value
   alen
 }
+
+# Amplitude should be between 0..1
+# Area should be 1 (it's scale-independent, dummy)
+debroglie <- function(petals, amplitude) {
+  # 1. figure out the radius from the area, petals + amplitude
+  #   area = pi*R^2*(1 + amplitude^2/2)
+  R = 1/sqrt(1 + amplitude^2/2)
+  # 2. figure out solidity + core ratio things
+  solidity = (pi*1^2) / (pi*R^2*(1+amplitude)^2)
+  core     = (pi*R^2*(1-amplitude)^2) / (pi*1^2)
+  # 3. computer perimeter
+  perimeter = arc_len(R, amplitude, petals)
+  return(list(R=R, s=solidity, c=core, p=perimeter, k=petals))
+}
+
+a = seq(0,1, by=0.01)
+out <- lapply(1:12, function(x) { as.data.frame(debroglie(x, a)) })
+out <- do.call(rbind, out)
+out$k <- factor(out$k)
+
+library(lattice)
+pdf("solidity_vs_core.pdf")
+xyplot(s ~ c | k, data=out, type="l", xlab="core ratio", ylab="solidity ratio", main="Solidity ratio vs Core ratio")
+xyplot(p ~ s | k, data=out, type="l", xlab="solidity ratio", ylab="perimeter", main="Perimeter vs Solidity ratio")
+xyplot(p ~ c | k, data=out, type="l", xlab="core ratio", ylab="perimeter", main="Perimeter vs Core ratio")
+dev.off()
+
+out <- as.data.frame(debroglie(5, a))
+tapply()
+plot(s ~ c, data=out, col = k, type="l")
+
+out <- as.data.frame(debroglie(10, a))
+
+plot(p ~ s, data=out, type="l")
+
+plot(r_hat*cos(theta_hat), r_hat*sin(theta_hat), pch='.', col=ifelse(r_hat < R* - R*a*sin(k*theta_hat), "red", "blue"))
+
 
 plot(function(x) { ans = numeric(length(x)); for (i in seq_along(x)) ans[i] = arc_len(1, x[i], 5); ans }, xlim=c(0,1))
 plot(function(x) { ans = numeric(length(x)); for (i in seq_along(x)) ans[i] = arc_len(1, x[i], 10); ans }, xlim=c(0,1), add=TRUE)
