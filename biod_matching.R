@@ -1,19 +1,48 @@
 k <- seq(0, 2, by=0.001)
 m <- 2
 
-biod <- function(k, m) {
-  m ^ ((k^2 - 1/2*k) / (k + 1/2)) * (1 - (1 - 1/m^k)^m)
+biod <- function(z, m) {
+  m ^ ((z^2 - 1/2*z) / (z + 1/2)) * (1 - (1 - 1/m^z)^m)
 }
 
 risk <- function(z, m) {
   1 / (m ^ (z - 1/2) * (1 - (1 - 1/m^z)^m)^((z+1/2)/z))
 }
 
-
 plot(NULL, xlim=c(0,3), ylim=c(0.8,1.6), xlab="Power", ylab="Biodiversity")
 for (i in 1:8) {
   plot(function(x) { biod(x, i)}, xlim=c(0, 4), col=i, add=TRUE, n=1000)
 }
+
+# alternate computation for total biodiversity
+area <- c(1,1,1)/3
+power <- 0.5
+
+total_area = sum(area)
+prop_area = area / total_area
+prop_biod = prop_area^power
+prop_outside_biod = 1 - prop_biod
+prop_outside_all  = prod(prop_outside_biod)
+prop_union_biod   = 1 - prop_outside_all
+total_biod = total_area^power
+total_union = total_biod * prop_union_biod
+total_union
+
+# the above is same as
+biod(0.5, 3)
+
+# now, for risk, we'll need to take area/k to the power z then multiply by perimeter and add?
+3 * ((1/3)^power * sqrt(1/3))
+(risk(0.5,3)/3)
+
+1 - (1 - (1/m)^z)^m
+
+find_power <- function(m) {
+  uniroot(function(x, m) { risk(x,m)-1 }, interval=c(0,4), m=m)$root
+}
+
+balance <- data.frame(fragments = 2:10, power = unlist(lapply(2:10, find_power)))
+plot(power ~ fragments, data=balance, type="l")
 
 plot(NULL, xlim=c(0,4), ylim=c(0,3), xlab="Power", ylab="Risk")
 for (i in 1:8) {
