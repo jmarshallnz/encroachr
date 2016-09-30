@@ -1,17 +1,28 @@
 k <- seq(0, 2, by=0.001)
 m <- 2
 
-biod <- function(z, m) {
-  m ^ ((z^2 - 1/2*z) / (z + 1/2)) * (1 - (1 - 1/m^z)^m)
+# This computes the biodiversity ratio of m versus 1 fragments of the same shape
+# if area of the m fragments is such that the total risk is the same in both cases,
+# where the dilution effect is d
+biod <- function(z, m, d=1) {
+  m ^ (z*(z*d - 1/2) / (z*d + 1/2)) * (1 - (1 - 1/m^z)^m)
 }
 
-risk <- function(z, m) {
-  1 / (m ^ (z - 1/2) * (1 - (1 - 1/m^z)^m)^((z+1/2)/z))
+# This computes the risk ratio of m versus 1 fragments of the same shape
+# if area of the m fragments is such that the total biodiversity is the same in both cases,
+# where the dilution effect is d
+risk <- function(z, m, d=1) {
+  1 / (m ^ (z*d - 1/2) * (1 - (1 - 1/m^z)^m)^((z*d+1/2)/z))
 }
 
 plot(NULL, xlim=c(0,3), ylim=c(0.8,1.6), xlab="Power", ylab="Biodiversity")
 for (i in 1:8) {
   plot(function(x) { biod(x, i)}, xlim=c(0, 4), col=i, add=TRUE, n=1000)
+}
+
+plot(NULL, xlim=c(0,3), ylim=c(0,4), xlab="Power", ylab="Risk")
+for (i in 1:8) {
+  plot(function(x) { risk(x, i, 0.7)}, xlim=c(0, 4), col=i, add=TRUE, n=1000)
 }
 
 # alternate computation for total biodiversity
@@ -28,8 +39,10 @@ total_biod = total_area^power
 total_union = total_biod * prop_union_biod
 total_union
 
-# the above is same as
+# In the special case of power=0.5, the above is same as:
 biod(0.5, 3)
+
+# the biod function otherwise uses different areas in the m versus 1 case so that risk is balanced.
 
 # now, for risk, we'll need to take area/k to the power z then multiply by perimeter and add?
 3 * ((1/3)^power * sqrt(1/3))
@@ -37,13 +50,26 @@ biod(0.5, 3)
 
 1 - (1 - (1/m)^z)^m
 
-find_power <- function(m) {
-  uniroot(function(x, m) { risk(x,m)-1 }, interval=c(0,4), m=m)$root
+find_power <- function(m, d) {
+  lwr = risk(0.01,m,d)-1
+  upr = risk(2,m,d)-1
+  if (lwr*upr > 0) {
+    return(NA);
+  }
+  uniroot(function(x, m, d) { risk(x,m,d)-1 }, interval=c(0,2), m=m, d=d)$root
 }
 
-balance <- data.frame(fragments = 2:10, power = unlist(lapply(2:10, find_power)))
-plot(power ~ fragments, data=balance, type="l")
+balance <- expand.grid(fragments = 2:10, dilute = seq(0.7,2, by=0.05))
+balance$power <- apply(balance, 1, function(x) { find_power(x[1], x[2]) })
 
+plot(NULL, xlim=c(2,10), ylim=c(0,3), xlab="Fragments", ylab="power (z)")
+lapply(seq_along(unique(balance$dilute)), function(x) { lines(power ~ fragments, data=subset(balance, dilute==unique(balance$dilute)[x]), col=grey(x/110)) })
+lines(power ~ fragments, data=subset(balance, dilute==1), col='red', lwd=2)
+
+
+library(ggplot2)
+ggplot(balance, aes(fragments, power)) + geom_line(aes(group=dilute, col=dilute))
+ggsave('power_vs_fragments_diluted.png')
 plot(NULL, xlim=c(0,4), ylim=c(0,3), xlab="Power", ylab="Risk")
 for (i in 1:8) {
   plot(function(x) { risk(x, i)}, xlim=c(0, 4), col=i, add=TRUE, n=1000)
