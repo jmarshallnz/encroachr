@@ -1,0 +1,99 @@
+---
+title: "Total Biodiversity"
+author: "Jonathan Marshall"
+date: "27 May 2016"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+We compute total biodiversity $B = \cup_i B_i$ given total area $A = \sum_i A_i$ and power $z$ as follows.
+
+$$
+\begin{aligned}
+B &= \bigcup_i B_i\\
+  &= \bigcup_i A_i^z\\
+  &= A^z \bigcup_i \frac{A_i^z}{A^z}\\
+  &= A^z \left[1 - \bigcap_i \left( 1 - \frac{A_i^z}{A^z} \right)\right]\\
+  &= A^z \left[1 - \prod_i \left( 1 - \frac{A_i^z}{A^z} \right)\right]
+\end{aligned}
+$$
+
+Note: I used $z=0.3$ as the power in the simulation runs by the looks, but really we can substitute
+any appropriate relationship in there I think?
+
+The key is that on the outside of the union we have the biodiversity if there was no fragmentation,
+then the union comprises the reduction in biodiversity as a consequence of fragmentation. This is derived
+by assuming that the total biodiversity is randomly allocated (independently) to the smaller areas such
+that the biodiversity in each small area is what it should be given the power law. Thus the ratios are
+basically the proportion of biodiversity in each area, so that the intersections are just products
+due to the independent sampling for each area.
+
+## Formulae for balancing risk or biodiversity (or both) for differing numbers of fragments.
+
+Suppose we are to divide an area into $m$ identical fragments with the same shape as the original.
+
+Then the total biodiversity across the $m$ fragments will be
+$$
+\begin{aligned}
+B &= A^z \left[1 - \prod_i \left( 1 - \frac{A_i^z}{A^z} \right)\right]\\
+  &= A^z \left[1 - \left( 1 - \frac{1}{m^z} \right)^m\right]\\
+\end{aligned}
+$$
+and hence the ratio of the total biodiversity of the $m$ fragments compared to the biodiversity
+in the area is given by
+$$
+1 - \left( 1 - \frac{1}{m^z} \right)^m
+$$
+
+Using this, we can derive formulae for risk if biodiversity is balanced, and for biodiversity if risk
+is balanced.
+
+Assume that risk is balanced between the $m$ and 1 fragment cases. As risk is just biodiversity times the
+perimeter, and as the perimeter is proportional to the square root of area, we see that
+$$
+\mathsf{Risk}(1, A) = k A^z A^{1/2} = k A ^ {z + 1/2}
+$$
+In the case where we have $m$ fragments, the total risk is just the sum of the individual risks, and hence
+$$
+\mathsf{Risk}(m, \hat{A}) = m \mathsf{Risk}(1, \frac{\hat{A}}{m}) = m k \left(\frac{\hat{A}}{m}\right)^{z + 1/2}
+$$
+If the risk in these cases are to be balanced, the total area in the $m$ fragment case, $\hat{A}$ may be found
+$$
+\begin{aligned}
+\mathsf{Risk}(m, \hat{A}) &= \mathsf{Risk}(1, A)\\
+m k \left(\frac{\hat{A}}{m}\right)^{z + 1/2} &= k A ^ {z + 1/2}\\
+\left(\frac{\hat{A}}{m}\right)^{z + 1/2} &= \frac{A ^ {z + 1/2}}{m}\\
+\frac{\hat{A}}{m} &= \frac{A}{m^\frac{1}{z+1/2}}\\
+\hat{A} &= A\frac{m}{m^\frac{1}{z+1/2}}\\
+        &= A m^\frac{z-1/2}{z+1/2}
+\end{aligned}
+$$
+Substituting this new total area, we find the biodiversity ratio in the case of $m$ fragments to be
+$$
+\begin{aligned}
+\mathsf{BR}(m) &= \frac{\hat{A}^z}{A^z}\left[1 - \left( 1 - \frac{1}{m^z} \right)^m\right]\\
+&= m^{z\frac{z-1/2}{z+1/2}}\left[1 - \left( 1 - \frac{1}{m^z} \right)^m\right].
+\end{aligned}
+$$
+In the same way, we can first balance biodiversity so that
+$$
+\begin{aligned}
+B(m, \tilde{A}) &= B(1, A)\\
+\tilde{A}^z\left[1 - \left( 1 - \frac{1}{m^z} \right)^m\right] &= A^z\\
+\tilde{A}^z &= \frac{A^z}{\left[1 - \left( 1 - \frac{1}{m^z} \right)^m\right]}\\
+\tilde{A} &= \frac{A}{\left[1 - \left( 1 - \frac{1}{m^z} \right)^m\right]^\frac{1}{z}}\\
+\end{aligned}
+$$
+and hence the risk ratio in the case of $m$ fragments is
+$$
+\begin{aligned}
+\mathsf{RR}(m, \tilde{A}) &= \frac{m k \left(\frac{\tilde{A}}{m}\right)^{z + 1/2}}{k A ^ {z + 1/2}}\\
+& = \frac{m k \left(\frac{A}{m\left[1 - \left( 1 - \frac{1}{m^z} \right)^m\right]^\frac{1}{z}}\right)^{z + 1/2}}{k A ^ {z + 1/2}}\\
+& = \frac{m}{m^{z + 1/2}\left[1 - \left( 1 - \frac{1}{m^z} \right)^m\right]^\frac{z + 1/2}{z}}\\
+& = \frac{1}{m^{z - 1/2}\left[1 - \left( 1 - \frac{1}{m^z} \right)^m\right]^\frac{z + 1/2}{z}}.\\
+\end{aligned}
+$$
+TODO: Do we alter the above for differing powers in the risk computation? i.e. instead of using B, do we use $B^d$ instead?
