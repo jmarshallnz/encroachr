@@ -5,9 +5,26 @@ m <- 2
 # if area of the m fragments is such that the total risk is the same in both cases,
 # where the dilution effect is d
 biod <- function(z, m, d=1) {
-  m ^ (z*(z*d - 1/2) / (z*d + 1/2)) * (1 - (1 - 1/m^z)^m)
+  # log(m ^ (z*(z*d - 1/2) / (z*d + 1/2)) * (1 - (1 - 1/m^z)^m))
+  
+  # question: Can we expand (1 - (1-1/m^z)^m) for large z and show some sort of decay?
+  # e.g. for m=1 it's just 1
+  #      for m=2 it's 1-(1 - 1/2^z)^2 = 1 - (1 - 2/(2^z) + 1/(2^z^2))
+  #                                   = 2/2^z - 1/4^z -> 0 as z -> inf with rate similar to e^x ??
+  #                                   = 1/2^z * (2 - 1/2^z)
+  # then we also have                2^z / 2^(1/(z + 1/2))
+  logb = (z*(z*d - 1/2) / (z*d + 1/2)) * log(m) + log(1 - ((m^z - 1)/m^(z*m))^m)
+  exp(logb)
+  #  m ^ (z*(z*d - 1/2) / (z*d + 1/2)) * (1 - (1 - 1/m^z)^m)
 }
 
+#
+# 1. Plot of perimeter vs solidity for deBroglie with differing number of petals
+# 2. Plot of dilution effect - split the colours up.
+# 3. deBroglie cirles plots (i.e. what they look like)
+# 4. Read + critique manuscript
+# 5. Play with the maths???
+# 
 # This computes the risk ratio of m versus 1 fragments of the same shape
 # if area of the m fragments is such that the total biodiversity is the same in both cases,
 # where the dilution effect is d
@@ -15,9 +32,9 @@ risk <- function(z, m, d=1) {
   1 / (m ^ (z*d - 1/2) * (1 - (1 - 1/m^z)^m)^((z*d+1/2)/z))
 }
 
-plot(NULL, xlim=c(0,3), ylim=c(0.8,1.6), xlab="Power", ylab="Biodiversity")
+plot(NULL, xlim=c(0,100), ylim=c(0.8,1.6), xlab="Power", ylab="Biodiversity")
 for (i in 1:8) {
-  plot(function(x) { biod(x, i)}, xlim=c(0, 4), col=i, add=TRUE, n=1000)
+  plot(function(x) { biod(x, i)}, xlim=c(0, 100), col=i, add=TRUE, n=1000)
 }
 
 plot(NULL, xlim=c(0,3), ylim=c(0,4), xlab="Power", ylab="Risk")
