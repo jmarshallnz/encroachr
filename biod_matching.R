@@ -79,13 +79,16 @@ find_power <- function(m, d) {
 balance <- expand.grid(fragments = 2:10, dilute = seq(0.7,2, by=0.05))
 balance$power <- apply(balance, 1, function(x) { find_power(x[1], x[2]) })
 
+
+##### Some later figure: Dilution effect stuff here
 plot(NULL, xlim=c(2,10), ylim=c(0,3), xlab="Fragments", ylab="power (z)")
 lapply(seq_along(unique(balance$dilute)), function(x) { lines(power ~ fragments, data=subset(balance, dilute==unique(balance$dilute)[x]), col=grey(x/110)) })
 lines(power ~ fragments, data=subset(balance, dilute==1), col='red', lwd=2)
 
-
 library(ggplot2)
 ggplot(balance, aes(fragments, power)) + geom_line(aes(group=dilute, col=dilute))
+#####
+
 ggsave('power_vs_fragments_diluted.png')
 plot(NULL, xlim=c(0,4), ylim=c(0,3), xlab="Power", ylab="Risk")
 for (i in 1:8) {
