@@ -76,20 +76,28 @@ find_power <- function(m, d) {
   uniroot(function(x, m, d) { risk(x,m,d)-1 }, interval=c(0,2), m=m, d=d)$root
 }
 
-balance <- expand.grid(fragments = 2:10, dilute = seq(0.7,2, by=0.05))
-balance$power <- apply(balance, 1, function(x) { find_power(x[1], x[2]) })
 
 
 ##### Some later figure: Dilution effect stuff here
-plot(NULL, xlim=c(2,10), ylim=c(0,3), xlab="Fragments", ylab="power (z)")
-lapply(seq_along(unique(balance$dilute)), function(x) { lines(power ~ fragments, data=subset(balance, dilute==unique(balance$dilute)[x]), col=grey(x/110)) })
-lines(power ~ fragments, data=subset(balance, dilute==1), col='red', lwd=2)
 
-library(ggplot2)
-ggplot(balance, aes(fragments, power)) + geom_line(aes(group=dilute, col=dilute))
-#####
+## Figure 6: Fragments vs power for different dilution effects
+dilute_val <- c(0.9, 1, 1.2)
+dilute_col <- c('purple', 'black', 'red')
+dilute_lty <- c('dashed', 'solid', 'dashed')
+dilute_lwd <- c(1, 2, 1)
 
-ggsave('power_vs_fragments_diluted.png')
+balance <- expand.grid(fragments = 2:10, dilute = dilute_val)
+balance$power <- apply(balance, 1, function(x) { find_power(x[1], x[2]) })
+
+pdf("figures/power_vs_fragments_by_dilution.pdf", width=7, height = 7)
+plot(NULL, xlim=c(2,10), ylim=c(0,3), xlab="Number of patches", ylab="power (z)")
+for (i in 1:length(dilute_val))
+  lines(power ~ fragments, data=subset(balance, dilute==dilute_val[i]), col=dilute_col[i], lty=dilute_lty[i], lwd=dilute_lwd[i])
+legend('topright', bty='n', legend=dilute_val, lty = dilute_lty, col = dilute_col, lwd = dilute_lwd, title = 'd')
+dev.off()
+
+
+
 plot(NULL, xlim=c(0,4), ylim=c(0,3), xlab="Power", ylab="Risk")
 for (i in 1:8) {
   plot(function(x) { risk(x, i)}, xlim=c(0, 4), col=i, add=TRUE, n=1000)
