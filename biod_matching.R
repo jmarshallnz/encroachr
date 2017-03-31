@@ -13,9 +13,9 @@ biod <- function(z, m, d=1) {
   #                                   = 2/2^z - 1/4^z -> 0 as z -> inf with rate similar to e^x ??
   #                                   = 1/2^z * (2 - 1/2^z)
   # then we also have                2^z / 2^(1/(z + 1/2))
-  logb = (z*(z*d - 1/2) / (z*d + 1/2)) * log(m) + log(1 - ((m^z - 1)/m^(z*m))^m)
-  exp(logb)
-  #  m ^ (z*(z*d - 1/2) / (z*d + 1/2)) * (1 - (1 - 1/m^z)^m)
+  #logb = (z*(z*d - 1/2) / (z*d + 1/2)) * log(m) + log(1 - ((m^z - 1)/m^(z*m))^m)
+  #exp(logb)
+   m ^ (z*(z*d - 1/2) / (z*d + 1/2)) * (1 - (1 - 1/m^z)^m)
 }
 
 #
@@ -32,14 +32,18 @@ risk <- function(z, m, d=1) {
   1 / (m ^ (z*d - 1/2) * (1 - (1 - 1/m^z)^m)^((z*d+1/2)/z))
 }
 
-plot(NULL, xlim=c(0,100), ylim=c(0.8,1.6), xlab="Power", ylab="Biodiversity")
-for (i in 1:8) {
-  plot(function(x) { biod(x, i)}, xlim=c(0, 100), col=i, add=TRUE, n=1000)
+plot(NULL, xlim=c(0,10), ylim=c(0.8,1.6), xlab="Power", ylab="Biodiversity")
+for (i in 1:10) {
+  plot(function(x) { biod(x, i)}, xlim=c(0, 10), col=i, add=TRUE, n=1000)
+  x = seq(0,10,by=0.01)
+  lines(x, i^(0.5/(x+0.5)), lty='dotted', col=i)
+  lines(x, i^(0.5/(x+0.5))*(1-(i*(i-1)/2)/(i^(x+1))), lty='dashed', col=i)
 }
+lines(x, 2^((1/2)/(x+1/2))*(1-2^(-(x+1))), lwd=2)
 
 plot(NULL, xlim=c(0,3), ylim=c(0,4), xlab="Power", ylab="Risk")
 for (i in 1:8) {
-  plot(function(x) { risk(x, i, 0.7)}, xlim=c(0, 4), col=i, add=TRUE, n=1000)
+  plot(function(x) { risk(x, i)}, xlim=c(0, 4), col=i, add=TRUE, n=1000)
 }
 
 # alternate computation for total biodiversity
@@ -96,7 +100,47 @@ for (i in 1:length(dilute_val))
 legend('topright', bty='n', legend=dilute_val, lty = dilute_lty, col = dilute_col, lwd = dilute_lwd, title = 'd')
 dev.off()
 
+# Plot of risk vs fragments for a given power, for same biodiversity
+z_val <- 0.28
+eride <- data.frame(Fragments = 1:10, eRIDE = risk(z = z_val, m = 1:10, d = 1))
 
+pdf("figures/eRIDE_vs_fragments_for_z_0_28_same_biodiversity_diff_area.pdf", width=7, height = 7)
+plot(eRIDE ~ Fragments, type='l', data=eride)
+dev.off()
+
+
+#### Supplementary plots
+# Risk vs power for different fragments (conserving biodiversity, diff areas)
+z_vals <- seq(0.1, 3, by=0.1)
+frags  <- 2:10
+frag_col <- grey((frags-1)/15)
+pdf("figures/eRIDE_vs_power_same_biodiversity_diff_areas.pdf", width=7, height=7)
+plot(NULL, xlim = range(z_vals), ylim=c(0.5,2.6), type='n', xlab='Power (z)', ylab='eRIDE', xaxs='i')
+abline(h=1, lty='dashed')
+for (f in seq_along(frags)) {
+  lines(z_vals, risk(z_vals, frags[f]), col=frag_col[f])
+}
+legend('topright', legend=c(1, frags), lty=c('dashed', rep('solid', length(frags))), col=c('black', grey((frags-1)/15)), title = 'Patches', bty='n')
+dev.off()
+
+# Biodiversity vs power for different fragments (conserving eRIDE, diff areas)
+z_vals <- seq(0.02, 3, by=0.02)
+frags  <- 2:10
+frag_col <- grey((frags-1)/15)
+pdf("figures/biodiversity_vs_power_same_eRIDE_diff_areas.pdf", width=7, height=7)
+plot(NULL, xlim = range(z_vals), ylim=c(0.7,1.8), type='n', xlab='Power (z)', ylab='Biodiversity', xaxs='i')
+abline(h=1, lty='dashed')
+for (f in seq_along(frags)) {
+  lines(z_vals, biod(z_vals, frags[f]), col=frag_col[f])
+}
+legend('topleft', legend=c(1, frags), lty=c('dashed', rep('solid', length(frags))), col=c('black', grey((frags-1)/15)), title = 'Patches', bty='n')
+dev.off()
+
+
+risk_pow <- expand.grid(Power = z_vals, Fragments = 1:10)
+risk_pow$eRIDE <- risk(risk_pow$Power, risk_pow$Fragments)
+
+# Biodiversity vs power for different fragments (conserving risk, diff areas)
 
 plot(NULL, xlim=c(0,4), ylim=c(0,3), xlab="Power", ylab="Risk")
 for (i in 1:8) {
