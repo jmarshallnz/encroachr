@@ -66,34 +66,32 @@ $$
 1 - \left( 1 - \frac{1}{m^z} \right)^m
 $$
 
-Using this, we can derive formulae for risk if biodiversity is balanced, and for biodiversity if risk
-is balanced.
+Using this, we can derive formulae for risk if biodiversity is balanced, and for biodiversity if risk is balanced.
 
-Assume that risk is balanced between the $m$ and 1 fragment cases. As risk is biodiversity times the
-perimeter, then assuming the perimeter is proportional to the square root of area, we see that
+Assume that risk is balanced between the $m$ and 1 fragment cases. As risk is biodiversity times the perimeter, then assuming the perimeter is proportional to the square root of area, we see that
 $$
-\mathsf{Risk}(1, A) = k A^z A^{1/2} = k A ^ {z + 1/2}
+\mathsf{Risk}(1, A) = A^{az} k A^{1/2} = k A ^ {az + 1/2}
 $$
-For some constant $k$. In the case where we have $m$ fragments, the total risk is the sum of the individual risks, and hence
+for some constant $k$, where we have included a dilution/amplification effect $a$. In the case where we have $m$ fragments, the total risk is the sum of the individual risks, and hence
 $$
-\mathsf{Risk}(m, \hat{A}) = m \mathsf{Risk}(1, \frac{\hat{A}}{m}) = m k \left(\frac{\hat{A}}{m}\right)^{z + 1/2}
+\mathsf{Risk}(m, \hat{A}) = m \mathsf{Risk}(1, \frac{\hat{A}}{m}) = m k \left(\frac{\hat{A}}{m}\right)^{az + 1/2}
 $$
 If the risk in these cases are to be balanced, the total area in the $m$ fragment case, $\hat{A}$ may be found
 $$
 \begin{aligned}
 \mathsf{Risk}(m, \hat{A}) &= \mathsf{Risk}(1, A)\\
-m k \left(\frac{\hat{A}}{m}\right)^{z + 1/2} &= k A ^ {z + 1/2}\\
-\left(\frac{\hat{A}}{m}\right)^{z + 1/2} &= \frac{A ^ {z + 1/2}}{m}\\
-\frac{\hat{A}}{m} &= \frac{A}{m^\frac{1}{z+1/2}}\\
-\hat{A} &= A\frac{m}{m^\frac{1}{z+1/2}}\\
-        &= A m^\frac{z-1/2}{z+1/2}
+m k \left(\frac{\hat{A}}{m}\right)^{az + 1/2} &= k A ^ {az + 1/2}\\
+\left(\frac{\hat{A}}{m}\right)^{az + 1/2} &= \frac{A ^ {az + 1/2}}{m}\\
+\frac{\hat{A}}{m} &= \frac{A}{m^\frac{1}{az+1/2}}\\
+\hat{A} &= A\frac{m}{m^\frac{1}{az+1/2}}\\
+        &= A m^\frac{az-1/2}{az+1/2}
 \end{aligned}
 $$
 Substituting this new total area, we find the biodiversity ratio in the case of $m$ fragments to be
 $$
 \begin{aligned}
 \mathsf{BR}(m) &= \frac{\hat{A}^z}{A^z}\left[1 - \left( 1 - \frac{1}{m^z} \right)^m\right]\\
-&= m^{z\frac{z-1/2}{z+1/2}}\left[1 - \left( 1 - \frac{1}{m^z} \right)^m\right].
+&= m^{z\frac{az-1/2}{az+1/2}}\left[1 - \left( 1 - \frac{1}{m^z} \right)^m\right].
 \end{aligned}
 $$
 In the same way, we can first balance biodiversity so that
@@ -108,10 +106,10 @@ $$
 and hence the risk ratio in the case of $m$ fragments is
 $$
 \begin{aligned}
-\mathsf{RR}(m) &= \frac{m k \left(\frac{\tilde{A}}{m}\right)^{z + 1/2}}{k A ^ {z + 1/2}}\\
-& = \frac{m k \left(\frac{A}{m\left[1 - \left( 1 - \frac{1}{m^z} \right)^m\right]^\frac{1}{z}}\right)^{z + 1/2}}{k A ^ {z + 1/2}}\\
-& = \frac{m}{m^{z + 1/2}\left[1 - \left( 1 - \frac{1}{m^z} \right)^m\right]^\frac{z + 1/2}{z}}\\
-& = \frac{1}{m^{z - 1/2}\left[1 - \left( 1 - \frac{1}{m^z} \right)^m\right]^\frac{z + 1/2}{z}}.\\
+\mathsf{RR}(m) &= \frac{m k \left(\frac{\tilde{A}}{m}\right)^{az + 1/2}}{k A ^ {az + 1/2}}\\
+& = \frac{m k \left(\frac{A}{m\left[1 - \left( 1 - \frac{1}{m^z} \right)^m\right]^\frac{1}{z}}\right)^{az + 1/2}}{k A ^ {az + 1/2}}\\
+& = \frac{m}{m^{az + 1/2}\left[1 - \left( 1 - \frac{1}{m^z} \right)^m\right]^\frac{az + 1/2}{z}}\\
+& = \frac{1}{m^{az - 1/2}\left[1 - \left( 1 - \frac{1}{m^z} \right)^m\right]^\frac{az + 1/2}{z}}.\\
 \end{aligned}
 $$
 
@@ -119,25 +117,22 @@ $$
 
 For the values of the power $z$ that are biologically plausible ($z < \frac{1}{2}$), we can see that if risk is balanced, then biodiversity is necessarily reduced, while if biodiversity is balanced then risk is necessarily increased. This can be seen as follows.
 
-If $z < \frac{1}{2}$ then $z - \frac{1}{2} < 0$, and given $m$ fragments with $m \geq 1$ we have
+If $z < \frac{1}{2a}$ then $az - \frac{1}{2} < 0$, and given $m$ fragments with $m \geq 1$ we have
 $$
-m^{z - \frac{1}{2}} < 1
+m^{az - \frac{1}{2}} < 1
 $$
 It is clear that
 $$
 0 < 1 - \left(1 - \frac{1}{m^z}\right)^m \leq 1
 $$
-with equality holding only if $z = 0$. From this, and noting that the fraction $\frac{z}{z+1/2}$ is non-negative it is clear that $RR(m) > 1$ and $BR(m) < 1$ for $0 < z < \frac{1}{2}$.
+with equality holding only if $z = 0$. From this, and noting that the fraction $\frac{z}{z+1/2}$ is non-negative it is clear that $RR(m) > 1$ and $BR(m) < 1$ for $0 < z < \frac{1}{2a}$. As an amplification effect does not seem plausible, $a \leq 1$ and thus for the range of powers of $z$ observed ($z < \frac{1}{2}$) we see that either risk increases or biodiversity decreases with fragmentation.
 
-Further, in the case where $z=\frac{1}{2}$ we have
+Further, in the case where $z=\frac{1}{2a}$ we have
 $$
-BR(m) = 1 - \left(1 - \frac{1}{\sqrt{m}}\right)^m
+BR(m) = 1 - \left(1 - \frac{1}{m^{1/{2a}}}\right)^m
 $$
 and
 $$
-RR(m) = \left[1 - \left(1 - \frac{1}{\sqrt{m}}\right)^m\right]^{-2}
+RR(m) = \left[1 - \left(1 - \frac{1}{m^{1/{2a}}}\right)^m\right]^{-2}
 $$
-so that it is clear that $BR(m) \rightarrow 1^{-}$ and $RR(m) \rightarrow 1^{+}$ as $m \rightarrow \infty$.
-
-## Extension to the case where we have dilution or amplification
-
+so that it is clear that $BR(m) \rightarrow 1^{-}$ and $RR(m) \rightarrow 1^{+}$ as $m \rightarrow \infty$. Thus, only larger values of $z$ that have not been observed in practice allow risk and biodiversity to remain balanced as fragmentation increases.
