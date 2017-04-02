@@ -1,0 +1,21 @@
+---
+output:
+  word_document: default
+  html_document: default
+---
+## METHODS FOR GRAVITY MODEL
+
+To estimate the potential for pandemic disease spread from an emerging disease we modelled potential disease spread between 3km pixels across Africa. We assumed that the potential for infection spreading between adjacent pixels $a$ and $b$ was proportional to the product of the population densities (analogous to the force of infection being the product of number of susceptibles and number of infectives), and thus infection is likely to travel along paths of high population density. To estimate the relative chance of a source pixel image $x$ resulting in spread to a destination pixel image $y$, we converted the pixel image to a graph using 4-connectivity, with pixels representing nodes and edge weights between adjacent pixels $a$ and $b$ given by
+$$
+d(a,b) \propto \frac{1}{p(a)p(b)}
+$$
+where $p(a)$ is the population density in pixel $a$. The potential of pandemic spread from pixel $x$ to pixel $y$ was then estimated by the shortest path $s(x,y)$ in the graph between corresponding nodes $x$ and $y$, which was found using Dijkstra's algorithm CITATION. The relative chance of pandemic spread to pixel $y$ was then estimated using
+$$
+ps(y) = \sum_x \mathsf{eRIDE}(x) s(x,y)
+$$
+where the sum is taken over all potential source pixels $x$. Thus, we assume that pandemic spread will tend to occur along paths of high population density, and are more likely sourced from regions with high risk of disease emergence.
+
+To assess the potential of each source pixel $x$ to contribute to a pandemic, we use
+$$
+pp(x) = \mathsf{eRIDE}(x) \sum_y s(x,y)
+$$
